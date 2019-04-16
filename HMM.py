@@ -12,12 +12,9 @@ sequence = ""
 for line in f:
     sequence = line
 f.close()
-print sequence
-
-# sequence = "0" + s
 
 # model for forward/backward:
-states = ("Hi", "Lo")
+states = ("-", "0", "Hi", "Lo")
 start = 0.5
 emission = {
     'Hi': {'A': 0.2, 'C': 0.3, 'G': 0.3, 'T': 0.2},
@@ -37,45 +34,79 @@ log_transition = {
     'Hi': {'Hi': math.log(0.5, 2), 'Lo': math.log(0.5, 2)},
     'Lo': {'Hi': math.log(0.4, 2), 'Lo': math.log(0.6, 2)}
 }
+sequence = "-0" + sequence
 
-# initialize table
-vtable = [{}]
+vMatrix = [[0 for x in range(len(states) + 1)] for y in range(len(sequence) + 1)]
 
-for s in states:
-    vtable[0][s] = {"probability": start * log_emission[s][sequence[0]], "previous": None}
+vMatrix[0][0] = '-'
+# initialize i,0
+for i in range(1, len(sequence)):
+    vMatrix[i][0] = sequence[i]
+    # print vMatrix[i][0]
 
-for t in range(1, len(sequence)):
-    vtable.append({})
-    for st in states:
-        max_tr_prob = vtable[t - 1][states[0]]["probability"] * log_transition[states[0]][st]
-        prev_prob_sel = states[0]
-        for prev_st in states[1:]:
-            tr_prob = vtable[t - 1][prev_st]["probability"] * log_transition[prev_st][st]
-            if tr_prob > max_tr_prob:
-                max_tr_prob = tr_prob
-                prev_prob_sel = prev_st
-        max_prob = max_tr_prob * log_emission[st][sequence[t]]
-        vtable[t][st] = {"probability": max_prob, "previous": prev_prob_sel}
-# for i in range(len(vtable)):
-#     print " ".join(sequence[i])
-#     for state in vtable[0]:
-#         for v in vtable:
-#             print state, " ".join(v[state]["probability"])
-optimal = []
-max_prob = max(value["probability"] for value in vtable[-1].values())
-previous = None
-for st, data in vtable[-1].items():
-    if data["probability"] == max_prob:
-        optimal.append(st)
-        previous = st
-        break
+# intialize 0,j
+for j in range(1, len(states)):
+    vMatrix[0][j] = states[j]
+    # print vMatrix[0][j]
 
-for t in range(len(vtable)-2, -1, -1):
-    optimal.insert(0, vtable[t+1][previous]["previous"])
-    previous = vtable[t+1][previous]["previous"]
+vMatrix[1][1] = 1
+# initialize second row/col
+for c in range(2, len(sequence)):
+    vMatrix[c][1] = 0
+    # print vMatrix[c][2]
+# print "next"
+for r in range(2, len(states)):
+    vMatrix[1][r] = 0
+    # print vMatrix[1][r]
 
-print optimal
-print max_prob
+
+opt_states = []
+mult_opt = "NO"
+
+
+
+
+
+
+
+# # initialize table
+# vtable = [{}]
+#
+# for s in states:
+#     vtable[0][s] = {"probability": start * log_emission[s][sequence[0]], "previous": None}
+#
+# for t in range(1, len(sequence)):
+#     vtable.append({})
+#     for st in states:
+#         max_tr_prob = vtable[t - 1][states[0]]["probability"] * log_transition[states[0]][st]
+#         prev_prob_sel = states[0]
+#         for prev_st in states[1:]:
+#             tr_prob = vtable[t - 1][prev_st]["probability"] * log_transition[prev_st][st]
+#             if tr_prob > max_tr_prob:
+#                 max_tr_prob = tr_prob
+#                 prev_prob_sel = prev_st
+#         max_prob = max_tr_prob * log_emission[st][sequence[t]]
+#         vtable[t][st] = {"probability": max_prob, "previous": prev_prob_sel}
+# # for i in range(len(vtable)):
+# #     print " ".join(sequence[i])
+# #     for state in vtable[0]:
+# #         for v in vtable:
+# #             print state, " ".join(v[state]["probability"])
+# optimal = []
+# max_prob = max(value["probability"] for value in vtable[-1].values())
+# previous = None
+# for st, data in vtable[-1].items():
+#     if data["probability"] == max_prob:
+#         optimal.append(st)
+#         previous = st
+#         break
+#
+# for t in range(len(vtable)-2, -1, -1):
+#     optimal.insert(0, vtable[t+1][previous]["previous"])
+#     previous = vtable[t+1][previous]["previous"]
+#
+# print optimal
+# print max_prob
 
 # A: P(x) given model
 
