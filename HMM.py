@@ -3,14 +3,6 @@
 
 import math
 
-
-# fill matrix using viterbi
-def findColMax(letter, matrix):
-    h = matrix[letter - 1][state]
-    l = matrix[letter - 1][state - 1]
-    return max(h, l)
-
-
 # read in fasta format input file
 fileName = raw_input("What is the name of your input file: ")
 f = open(fileName, 'r')
@@ -23,7 +15,7 @@ f.close()
 
 # model for forward/backward:
 states = ("-", "0", "Hi", "Lo")
-start = 0.5
+start = math.log(0.5, 2)
 emission = {
     'Hi': {'A': 0.2, 'C': 0.3, 'G': 0.3, 'T': 0.2},
     'Lo': {'A': 0.3, 'C': 0.2, 'G': 0.2, 'T': 0.3}
