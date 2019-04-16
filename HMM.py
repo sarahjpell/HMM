@@ -56,13 +56,26 @@ for t in range(1, len(sequence)):
                 prev_prob_sel = prev_st
         max_prob = max_tr_prob * log_emission[st][sequence[t]]
         vtable[t][st] = {"probability": max_prob, "previous": prev_prob_sel}
-for i in range(len(vtable)):
-    print " ".join(sequence[i])
-    for state in vtable[0]:
-        for v in vtable:
-            print state, " ".join(v[state]["probability"])
+# for i in range(len(vtable)):
+#     print " ".join(sequence[i])
+#     for state in vtable[0]:
+#         for v in vtable:
+#             print state, " ".join(v[state]["probability"])
 optimal = []
+max_prob = max(value["probability"] for value in vtable[-1].values())
+previous = None
+for st, data in vtable[-1].items():
+    if data["probability"] == max_prob:
+        optimal.append(st)
+        previous = st
+        break
 
+for t in range(len(vtable)-2, -1, -1):
+    optimal.insert(0, vtable[t+1][previous]["previous"])
+    previous = vtable[t+1][previous]["previous"]
+
+print optimal
+print max_prob
 
 # A: P(x) given model
 
