@@ -5,11 +5,10 @@ import math
 
 
 # fill matrix using viterbi
-def findColMax(letter, state, matrix):
-    top = matrix[letter - 1][state]
-    top_left = matrix[letter - 1][state - 1]
-    left = matrix[letter][state - 1]
-    return max(top, top_left, left)
+def findColMax(letter, matrix):
+    h = matrix[letter - 1][state]
+    l = matrix[letter - 1][state - 1]
+    return max(h, l)
 
 
 # read in fasta format input file
@@ -75,11 +74,26 @@ ct = len(sequence) - 1
 while ct != 0:
     for letter in range(2, len(sequence)):
         for state in range(2, len(states)):
+            # multiply by START
             if letter == 2:
-                # TODO: FIGURE OUT HOW TO ACCESS CORRECT STATE INDEX
                 vMatrix[letter][state] = start * log_emission[states[state]][sequence[letter]]
-            maxVal = findColMax(letter, state, vMatrix)
-            vMatrix[letter][state] = maxVal
+                # TODO: THIS STUFF
+            else:
+                pass
+            # if state = 2 : in hi state -- check hi-hi, hi-lo
+
+            # if state = 3 : in low state -- check lo-hi, lo-lo
+
+
+
+
+
+
+
+
+
+
+
 # # initialize table
 # vtable = [{}]
 #
