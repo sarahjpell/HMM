@@ -3,6 +3,15 @@
 
 import math
 
+
+# fill matrix using viterbi
+def findColMax(letter, state, matrix):
+    top = matrix[letter - 1][state]
+    top_left = matrix[letter - 1][state - 1]
+    left = matrix[letter][state - 1]
+    return max(top, top_left, left)
+
+
 # read in fasta format input file
 fileName = raw_input("What is the name of your input file: ")
 f = open(fileName, 'r')
@@ -59,16 +68,18 @@ for r in range(2, len(states)):
     vMatrix[1][r] = 0
     # print vMatrix[1][r]
 
-
 opt_states = []
 mult_opt = "NO"
+ct = len(sequence) - 1
 
-
-
-
-
-
-
+while ct != 0:
+    for letter in range(2, len(sequence)):
+        for state in range(2, len(states)):
+            if letter == 2:
+                # TODO: FIGURE OUT HOW TO ACCESS CORRECT STATE INDEX
+                vMatrix[letter][state] = start * log_emission[states[state]][sequence[letter]]
+            maxVal = findColMax(letter, state, vMatrix)
+            vMatrix[letter][state] = maxVal
 # # initialize table
 # vtable = [{}]
 #
