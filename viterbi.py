@@ -15,15 +15,7 @@ f.close()
 
 # model for forward/backward:
 states = ("-", "0", "Hi", "Lo")
-start = math.log(0.5, 2)
-emission = {
-    'Hi': {'A': 0.2, 'C': 0.3, 'G': 0.3, 'T': 0.2},
-    'Lo': {'A': 0.3, 'C': 0.2, 'G': 0.2, 'T': 0.3}
-}
-transition = {
-    'Hi': {'Hi': 0.5, 'Lo': 0.5},
-    'Lo': {'Hi': 0.4, 'Lo': 0.6}
-}
+log_start = math.log(0.5, 2)
 
 # log model for viterbi
 log_emission = {
@@ -60,51 +52,41 @@ for r in range(2, len(states)):
 # hi_opt = []
 # lo_opt = []
 mult_opt = "NO"
-
+max_val = 0
 for letter in range(2, len(sequence)):
     for state in range(2, len(states)):
         if letter == 2:
-            vMatrix[letter][state] = start * log_emission[states[state]][sequence[letter]]
-            # if state == 2:
-            #     hi_opt.append('H')
-            # else:
-            #     lo_opt.append('L')
+            vMatrix[letter][state] = log_start + log_emission[states[state]][sequence[letter]]
+
         else:
             # if state = 2 : in hi state -- check hi-hi, hi-lo
             if state == 2:
-                pos_pos = vMatrix[letter - 1][state] * log_emission[states[state]][sequence[letter]] * \
+                pos_pos = vMatrix[letter - 1][state] + log_emission[states[state]][sequence[letter]] + \
                           log_transition[states[state]][states[state]]
-                pos_neg = vMatrix[letter - 1][state + 1] * log_emission[states[state]][sequence[letter]] * \
+                pos_neg = vMatrix[letter - 1][state + 1] + log_emission[states[state]][sequence[letter]] + \
                           log_transition[states[state + 1]][states[state + 1]]
-
+                # print pos_pos, pos_neg
                 if pos_pos > pos_neg:
                     max_val = pos_pos
-                    # hi_opt.append('H')
                 elif pos_neg > pos_pos:
                     max_val = pos_neg
-                    # hi_opt.append('L')
-                # else:
-                #     max_val = pos_pos
-                #     hi_opt.append('=')
-                #     mult_opt = 'YES'
+                else:
+                    mult_opt = 'YES'
                 vMatrix[letter][state] = max_val
 
             # if state = 3 : in low state -- check lo-hi, lo-lo
             elif state == 3:
-                neg_neg = vMatrix[letter - 1][state] * log_emission[states[state]][sequence[letter]] * \
+                neg_neg = vMatrix[letter - 1][state] + log_emission[states[state]][sequence[letter]] + \
                           log_transition[states[state]][states[state]]
-                neg_pos = vMatrix[letter - 1][state - 1] * log_emission[states[state]][sequence[letter]] * \
+                neg_pos = vMatrix[letter - 1][state - 1] + log_emission[states[state]][sequence[letter]] + \
                           log_transition[states[state - 1]][states[state - 1]]
+                # print neg_neg, neg_pos
                 if neg_neg > neg_pos:
                     max_val = neg_neg
-                    # lo_opt.append('L')
                 elif neg_pos > neg_neg:
                     max_val = neg_pos
-                    # lo_opt.append('H')
-                # else:
-                #     max_val = neg_pos
-                #     lo_opt += '='
-                #     mult_opt = 'YES'
+                else:
+                    mult_opt = 'YES'
                 vMatrix[letter][state] = max_val
 
             else:
@@ -124,27 +106,32 @@ for c in range(2, len(sequence)):
         opt_path.append('=')
         mult_opt = 'YES'
 
-print "matrix"
+file1 = open("4.01.txt", 'w')
+file2 = open("4.02.txt", 'w')
+file3 = open("4.03.txt", 'w')
+file4 = open("4.05.txt", 'w')
+
 for item in range(len(states)):
     for another in range(len(vMatrix) - 1):
         if another == len(vMatrix) - 2:
-            print vMatrix[another][item]
+            file2.write(str(vMatrix[another][item]))
+            file2.write('\n')
         else:
-            print vMatrix[another][item],
+            file2.write(str(vMatrix[another][item]))
+            file2.write(' ')
+file2.close()
 
-print mult_opt
 for thing in opt_path:
-    print thing,
-# A: P(x) given model
+    file3.write(thing)
+print
+file3.close()
 
-# B: write complete viterbi table
+file4.write(mult_opt)
+file4.close()
 
-# C: write most probable path
+pos_max = vMatrix[-2][2]
+neg_max = vMatrix[-2][3]
+tmax = max(pos_max, neg_max)
+file1.write(str(tmax))
+file1.close()
 
-# D: p(most probable path)
-
-# E: Are there multiple optimal paths?
-
-# F: posterior probability of states H and L at position 4
-
-# G: bonus... report all most probable paths
