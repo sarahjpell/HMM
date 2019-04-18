@@ -64,8 +64,8 @@ for r in range(2, len(states)):
 for letter in range(2, len(sequence)):
     for state in range(2, len(states)):
         if letter == 2:
-            vMatrix[letter][state] = start + emission[states[state]][sequence[letter]]
-            rMatrix[letter][state] = start + emission[states[state]][rsequence[letter]]
+            vMatrix[letter][state] = start * emission[states[state]][sequence[letter]]
+            rMatrix[letter][state] = 1 * emission[states[state]][rsequence[letter]]
 
         else:
             # if state = 2 : in hi state
@@ -111,6 +111,7 @@ hp_prob = (vMatrix[6][2]*rMatrix[6][2])/total
 lp_prob = (vMatrix[6][3]*rMatrix[6][3])/total
 
 file2.write(str(hp_prob))
+file2.write('\n')
 file2.write(str(lp_prob))
 
 file1.close()
